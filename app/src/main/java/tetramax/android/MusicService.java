@@ -6,6 +6,7 @@ import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class MusicService extends Service {
 
     private final MediaPlayer player = new MediaPlayer();
     private final Random random = new Random();
+    public String song = "";
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -59,7 +61,7 @@ public class MusicService extends Service {
             return;
         }
         final List<String> files = getFiles();
-        final String song = files.get(random.nextInt(files.size()));
+        song = files.get(random.nextInt(files.size()));
 
         Log.i(TAG, "Playing song " + song);
 
@@ -79,6 +81,11 @@ public class MusicService extends Service {
 
         player.setLooping(true);
         player.start();
+
+        // sends a message to the activity
+        final Intent intent = new Intent("mplayer");
+        intent.putExtra("song", song);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     public void stop() {
@@ -87,6 +94,12 @@ public class MusicService extends Service {
         }
 
         player.reset();
+        song = "";
+
+        // send a message to the activity
+        final Intent intent = new Intent("mplayer");
+        intent.putExtra("song", song);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     /**

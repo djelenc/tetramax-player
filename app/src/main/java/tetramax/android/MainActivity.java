@@ -1,12 +1,15 @@
 package tetramax.android;
 
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -94,13 +97,32 @@ public class MainActivity extends AppCompatActivity {
             bindService(new Intent(MainActivity.this, MusicService.class),
                     connection, Context.BIND_AUTO_CREATE);
         }
+
+        // subscribes to receiving messages from service using filter "mplayer"
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                receiver, new IntentFilter("mplayer"));
     }
+
+    /**
+     * Handles messages coming from the service
+     */
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (musicInfoTextView != null) {
+                musicInfoTextView.setText(intent.getStringExtra("song"));
+            }
+        }
+    };
 
     @Override
     protected void onStop() {
         Log.i(TAG, "onStop()");
         unbindService(connection);
         service = null;
+
+        // unregisters from receiving messages from the service
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         super.onStop();
     }
 

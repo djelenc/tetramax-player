@@ -10,7 +10,7 @@
         android:id="@+id/musicInfoTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="00:00 / 00:00"
+        android:text="(song info)"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -36,7 +36,7 @@
         android:id="@+id/startServiceButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="start service"
+        android:text="Start service"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -44,7 +44,7 @@
         android:id="@+id/stopServiceButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="stop service"
+        android:text="Stop service"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
