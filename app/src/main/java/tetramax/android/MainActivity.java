@@ -19,10 +19,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private TextView musicInfoTextView;
-    private Button playButton, stopButton, startServiceButton, stopServiceButton;
+    private Button startServiceButton, stopServiceButton;
 
-    private final MediaPlayer player = new MediaPlayer();
-    private final Random random = new Random();
+    private MediaPlayer player;
+    private Random random;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,24 +30,13 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "onCreate()");
         setContentView(R.layout.activity_main);
 
-        playButton = findViewById(R.id.playButton);
-        stopButton = findViewById(R.id.stopButton);
+        player = new MediaPlayer();
+        random = new Random();
+
         musicInfoTextView = findViewById(R.id.musicInfoTextView);
         startServiceButton = findViewById(R.id.startServiceButton);
         stopServiceButton = findViewById(R.id.stopServiceButton);
 
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                play();
-            }
-        });
-        stopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stop();
-            }
-        });
         startServiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,13 +61,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         Log.i(TAG, "onStart()");
-    }
-
-    @Override
-    protected void onStop() {
-        Log.i(TAG, "onStop()");
-        player.release();
-        super.onStop();
     }
 
     public void play() {
