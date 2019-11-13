@@ -26,11 +26,11 @@ public class MainActivity extends AppCompatActivity {
 
     private MusicService service;
 
-    private ServiceConnection connection = new ServiceConnection() {
+    private final ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.i(TAG, "onServiceConnected()");
-            MainActivity.this.service = ((LocalBinder) service).service;
+            MainActivity.this.service = ((MusicService.LocalBinder) service).service;
         }
 
         @Override
@@ -118,8 +118,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         Log.i(TAG, "onStop()");
-        unbindService(connection);
-        service = null;
+        if (service != null) {
+            unbindService(connection);
+            service = null;
+        }
 
         // unregisters from receiving messages from the service
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);

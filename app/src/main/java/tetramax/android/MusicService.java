@@ -14,15 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-class LocalBinder extends Binder {
-    final MusicService service;
-
-    LocalBinder(MusicService service) {
-        this.service = service;
-    }
-}
 
 public class MusicService extends Service {
+    static class LocalBinder extends Binder {
+        final MusicService service;
+
+        LocalBinder(MusicService service) {
+            this.service = service;
+        }
+    }
+
     private static final String TAG = MusicService.class.getSimpleName();
 
     private LocalBinder binder = new LocalBinder(this);
