@@ -28,19 +28,19 @@
      - As the name write =MusicService=.
      - Remove the tick in the =Exported= option; we do not want that our music service is instantiated by other android applications.
 **** Move the player code into service
-      Next, we will gradually migrate all player code into the service. Initially, we will automatically start the playback when the service starts. Our application will be upgraded with explicit controls later on.
-     
-      First, delete the =MusicService= constructor that was created by the Android studio. Next, we'll gradually migrate all =MediaPlayer= code (and the the =random= instance) into =MusicService= class.
+      Next, we will gradually migrate all player code into the service. Initially, the service will automatically play the music when started. We will add explicit controls later on. First, delete the =MusicService= constructor that was created by the Android studio. Then:
 
+      - Add member member variables of type =MediaPlayer= and =Random= to =MusicService=.
       - Override method =MusicService.onCreate= and inside instantiate the =MediaPlayer= and the =Random= instance.
       - Override method =MusicService.onDestroy= and inside release the =MediaPlayer= instance.
       - Move =play()= and =stop()= methods from =MainActivity= to =MusicService=:
         - Also, remove the code that changes =TextView= objects since that code cannot be used from the service.
         - Also in =MainActivity=, comment out all calls to methods =play= and =stop=.
+      - Move method =getFiles()= from =MainActivity= to =MusicService=.
       - Override =MusicService.onStartCommand= by adding the following behavior:
         - the call to method =MusicService.play=;
-        - the returns of value =START_STICKY=.
-      - In =MainActivity=, remove all references to the =player= instance.
+        - the return of value =START_STICKY=.
+      - In =MainActivity=, remove all references to the =player= and the =random= instance.
       - In =MainActivity.onCreate()= change the behavior of =startServiceButton= so that it starts the service instead of showing the Toast message. The service is started by making the =Intent= instance and calling the =startService= method as shown below.
         #+BEGIN_SRC java
  final Intent intent = new Intent(MainActivity.this, MusicService.class);
