@@ -30,7 +30,7 @@
 **** Move the player code into service
       Next, we will gradually migrate all player code into the service. Initially, we will automatically start the playback when the service starts. Our application will be upgraded with explicit controls later on.
      
-      First, delete the =MediaService= constructor that was created by the Android studio. Next, we'll gradually migrate all =MediaPlayer= code (and the the =random= instance) into =MediaService= class.
+      First, delete the =MusicService= constructor that was created by the Android studio. Next, we'll gradually migrate all =MediaPlayer= code (and the the =random= instance) into =MusicService= class.
 
       - Override method =MusicService.onCreate= and inside instantiate the =MediaPlayer= and the =Random= instance.
       - Override method =MusicService.onDestroy= and inside release the =MediaPlayer= instance.
@@ -54,11 +54,11 @@
      
       If you now press the =startServiceButton=, notice how the playback starts and it does not stop if you rotate the screen, switch to another application, or dim the screen. The playback stops only if you stop the service with the =stopServiceButton= or remove the application from the application drawer.
 *** Bind activity to the service
-    While running the playback in a service is an improvement, the current solution is a bit awkward. In particular, we have very little control over the service. For instance, the playback starts as the service is created, and the only way to stop it, is to stop the service. It would be much better if we could have more fine-grained control over playback. To that end, we will *bind* to the service from the activity. This requires making changes to both the =MediaService= and the =MainActivity=.
+    While running the playback in a service is an improvement, the current solution is a bit awkward. In particular, we have very little control over the service. For instance, the playback starts as the service is created, and the only way to stop it, is to stop the service. It would be much better if we could have more fine-grained control over playback. To that end, we will *bind* to the service from the activity. This requires making changes to both the =MusicService= and the =MainActivity=.
 **** Make service return a =Binder= instance
      When we bind to the service the Android system will asynchronously return a =Binder= instance. We'll create a type of a =Binder= implementation, named =LocalBinder=, that will hold a reference to the instance of =MusicService=.
 ***** Add class =LocalBinder=
-       Inside our =MediaService=, define the =LocalBinder= as a static inner class. Use the following code.
+       Inside our =MusicService=, define the =LocalBinder= as a static inner class. Use the following code.
        #+BEGIN_SRC java
  static class LocalBinder extends Binder {
    final MusicService service;
