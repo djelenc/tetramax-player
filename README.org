@@ -147,7 +147,7 @@
         #+END_SRC 
         To the start playback, first start the service and then press the play button. Now, you can stop the playback with stop and restart it by pressing the play again. Note that the service was not destroyed and created during this start/stop/start cycle, but you directly controlled the =MediaPlayer= instance by calling the =service.start()= and =service.stop()= methods.
        
-        However, there is still a small issues: if you start the playback (first start the service and then the playback) and rotate the screen, the music will continue to play, however, the start and stop button will appear to stop working. Moreover, if you look at the output of the =Logcat= system, you'll see a warning about a memory leak. Something similar to this:
+        However, there is still a small issue: if you start the playback (start the service and then the playback) and rotate the screen, the music will continue to play, however, the start and stop button will stop working. Moreover, if you look at the output of the =Logcat= system, you'll see a warning about a memory leak. Something similar to this:
         #+BEGIN_SRC text
  E/ActivityThread: Activity tetramax.android.MainActivity has leaked ServiceConnection tetramax.android.MainActivity$1@4f60225 that was originally bound here
        android.app.ServiceConnectionLeaked: Activity tetramax.android.MainActivity has leaked ServiceConnection tetramax.android.MainActivity$1@4f60225 that was originally bound here
@@ -214,7 +214,7 @@
  }
      #+END_SRC
 
-     Doing this fixes both the memory leak problem and the broken start and play buttons.
+     Doing this fixes both the memory leak and the broken start and play buttons.
 
      At this stage, we are only missing the communication between the service and the activity. Right now we can control the service from the activity (by calling the methods on the =service= instance), but there are cases when the service needs to send a message to the activity on itself. For instance, to tell the name of the song that is playing, or to signal how far the current song has been played.
 *** Send the name of the song with a local broadcast
@@ -286,6 +286,9 @@
       Notice that now whenever you start the playback, the name of the song is displayed in the =TextView= in the middle of the screen. When the playback is stopped, the song name disappears.
 
       However, there are a few bugs left. For instance, if you start the playback and rotate the screen, the song name goes away. Or if you start the playback and terminate the service directly by pressing the stop service button, the song name remains. Fixing these two bugs is left as an exercise on your own.
+** Expansion ideas
+   The purpose of this workshop was to demonstrate the use of a few Android components, namely activities, services, intents and broadcasts. To that end, the code was kept simple. To make this music player more practical, you may on your own try to implement a few additional features. For instance:
+   - Display the playback progress: show the amount of time the song has been playing. One way of implementing this is to have a =Timer= instance that sends a broadcast every seconds that contains the current playback progress.
+   - Implement the service as a [[https://developer.android.com/guide/components/services#Foreground][foreground service.]] A foreground services shows a notification and quick controls that allow user-actions. For instance, controls for stopping and starting the playback.
 ** Attribution
    All MP3 songs used in this project were obtained from [[https://www.bensound.com/royalty-free-music][bensound.com]] under creative commons license. 
-
