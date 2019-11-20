@@ -287,8 +287,8 @@
 
       However, there are a few bugs left. For instance, if you start the playback and rotate the screen, the song name goes away. Or if you start the playback and terminate the service directly by pressing the stop service button, the song name remains. Fixing these two bugs is left as an exercise on your own.
 ** Expansion ideas
-   The purpose of this workshop was to demonstrate the use of a few Android components, namely activities, services, intents and broadcasts. To that end, the code was kept simple. To make this music player more practical, you may, on your, own try to implement a few additional features. For instance:
+   The purpose of this workshop was to demonstrate the use of a few Android components, namely activities, services, intents and broadcasts. To that end, the code was kept simple. To make this music player more practical, you may, on your own, try to implement a few additional features. For instance:
    - Display the playback progress: show the amount of time the song has been playing. One way of implementing this is to add a =Timer= instance to =MusicService= that, at regular intervals, sends broadcasts containing information about the current playback.
-   - Implement the service as a [[https://developer.android.com/guide/components/services#Foreground][foreground service.]] A foreground services shows a notification and quick controls that allow user-actions. For instance, controls for stopping and starting the playback.
+   - Implement the service as a [[https://developer.android.com/guide/components/services#Foreground][foreground service.]] A foreground services shows a notification and quick controls that allow user actions. For instance, controls for stopping and starting the playback.
 ** Attribution
    All MP3 songs used in this project were obtained from [[https://www.bensound.com/royalty-free-music][bensound.com]] under creative commons license. 
