@@ -1,5 +1,6 @@
 package tetramax.android;
 
+import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -19,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private TextView musicInfoTextView;
-    private Button startServiceButton, stopServiceButton;
+    private Button startServiceButton, stopServiceButton, aboutButton;
 
     private MediaPlayer player;
     private Random random;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         musicInfoTextView = findViewById(R.id.musicInfoTextView);
         startServiceButton = findViewById(R.id.startServiceButton);
         stopServiceButton = findViewById(R.id.stopServiceButton);
+        aboutButton = findViewById(R.id.aboutButton);
 
         startServiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,6 +55,12 @@ public class MainActivity extends AppCompatActivity {
                         getApplicationContext(),
                         "Stop service button will be used in the service implementation.",
                         Toast.LENGTH_SHORT).show();
+            }
+        });
+        aboutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, AboutActivity.class));
             }
         });
     }
