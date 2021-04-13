@@ -14,10 +14,10 @@
 
     Notice that while the application works, it behaves unpredictably. (The playback stops when the users rotates the phone, closes the screen, or switches to another application; you may need to do these actions multiple times, before the playback stops, but it will stop eventually.)
 
-*** Stop playback when the activity stops
+*** Stop playback when the activity pauses
     The reason for such behavior is that when you rotate the screen, your =MainActivity= instance gets destroyed (together with the =MediaPlayer= instance which stops the playback). While the playback may 'survive' the initial screen rotations (and other configuration changes), it will stop eventually. The proper way of handling this is to manually stop the playback whenever the activity configuration changes. To stop the playback:
     
-    - Override the implementation of =MainActivity.onStop()=,
+    - Override the implementation of =MainActivity.onPause()=,
     - manually stop the playback by calling =stop()=,
     - and release the player instance by calling =player.release()=.
     
