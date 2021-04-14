@@ -14,7 +14,7 @@ class MusicService : Service() {
     val player = MediaPlayer()
 
     // holds the name of the song currently being played
-    public var song = ""
+    var song = ""
 
     // an implementation of Binder interface
     internal class LocalBinder(val service: MusicService) : Binder()
