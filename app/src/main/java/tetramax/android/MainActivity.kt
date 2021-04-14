@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Starts the music player playback
      */
-    private fun play() {
+    fun play() {
         player?.let {
             if (it.isPlaying) {
                 return
@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Stops the music player playback
      */
-    private fun stop() {
+    fun stop() {
         player?.let {
             if (it.isPlaying) {
                 it.stop()
