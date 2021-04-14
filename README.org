@@ -185,7 +185,7 @@ One way of sending messages between Android components is to use [[https://devel
 First, we'll set-up a member variable inside =MusicService= that will hold the name of the song that is being played.
 #+BEGIN_SRC java
 // holds the name of the song currently being played
-public var song = ""
+var song = ""
 #+END_SRC
 Then, change the implementations of =MusicService.play()= and =MusicService.stop()= to set the value of this member variable appropriately.
 
