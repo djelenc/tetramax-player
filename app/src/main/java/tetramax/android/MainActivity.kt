@@ -10,7 +10,6 @@ import android.widget.TextView
 import android.widget.Toast
 import java.io.IOException
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
     private var musicInfoTextView: TextView? = null
@@ -111,20 +110,9 @@ class MainActivity : AppCompatActivity() {
      *
      * @return
      */
-    private fun getFiles(): MutableList<String> {
-        val mp3s: MutableList<String> = ArrayList()
-        try {
-            val files = assets.list("") ?: return mp3s
-            for (fileName in files) {
-                if (fileName.toLowerCase(Locale.getDefault()).endsWith("mp3")) {
-                    mp3s.add(fileName)
-                }
-            }
-        } catch (e: IOException) {
-            Log.w(TAG, "Error while getting files.", e)
-        }
-        return mp3s
-    }
+    private fun getFiles(): List<String> =
+        assets.list("")?.filter { it.toLowerCase(Locale.getDefault()).endsWith("mp3") }
+            ?: emptyList()
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName
