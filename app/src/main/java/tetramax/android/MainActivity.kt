@@ -1,24 +1,43 @@
 package tetramax.android
 
-import android.content.Intent
-import android.media.MediaPlayer
+import android.app.ActivityManager
+import android.content.*
 import android.os.Bundle
+import android.os.IBinder
+import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
-import java.io.IOException
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
+    private var service: MusicService? = null
+
+    private val connection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            Log.i(TAG, "onServiceConnected()")
+            this@MainActivity.service = (service as MusicService.LocalBinder).service
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            Log.i(TAG, "onServiceDisconnected()")
+            service = null
+        }
+    }
+
+    private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            musicInfoTextView?.text = intent?.getStringExtra("song")
+        }
+    }
+
     private var musicInfoTextView: TextView? = null
     private var startServiceButton: Button? = null
     private var stopServiceButton: Button? = null
     private var aboutButton: Button? = null
-
-    private var player: MediaPlayer? = null
+    private var playButton: Button? = null
+    private var stopButton: Button? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,21 +47,24 @@ class MainActivity : AppCompatActivity() {
         startServiceButton = findViewById(R.id.startServiceButton)
         stopServiceButton = findViewById(R.id.stopServiceButton)
         aboutButton = findViewById(R.id.aboutButton)
+        playButton = findViewById(R.id.playButton)
+        stopButton = findViewById(R.id.stopButton)
 
+        playButton?.setOnClickListener { service?.play() }
+        stopButton?.setOnClickListener { service?.stop() }
         startServiceButton?.setOnClickListener {
-            Toast.makeText(
-                applicationContext,
-                "Start service button will be used in the service implementation.",
-                Toast.LENGTH_SHORT
-            ).show()
+            val intent = Intent(this@MainActivity, MusicService::class.java)
+            startService(intent)
+            bindService(intent, connection, BIND_AUTO_CREATE)
         }
         stopServiceButton?.setOnClickListener {
-            Toast.makeText(
-                applicationContext,
-                "Stop service button will be used in the service implementation.",
-                Toast.LENGTH_SHORT
-            ).show()
+            service?.let {
+                unbindService(connection)
+                service = null
+                stopService(Intent(this@MainActivity, MusicService::class.java))
+            }
         }
+
         aboutButton?.setOnClickListener {
             startActivity(
                 Intent(
@@ -55,75 +77,40 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        player = MediaPlayer()
         Log.i(TAG, "onStart()")
+        if (isServiceRunning()) {
+            bindService(
+                Intent(this@MainActivity, MusicService::class.java),
+                connection,
+                BIND_AUTO_CREATE
+            )
+        }
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, IntentFilter("mplayer"))
     }
 
-    /**
-     * Starts the music player playback
-     */
-    fun play() {
-        player?.let {
-            if (it.isPlaying) {
-                return
-            }
-            getFiles().random().apply {
-                try {
-                    val descriptor = assets.openFd(this)
-                    it.setDataSource(
-                        descriptor.fileDescriptor,
-                        descriptor.startOffset,
-                        descriptor.length
-                    )
-                    descriptor.close()
-                    it.prepare()
-                } catch (e: IOException) {
-                    Log.w(TAG, "Could not open file", e)
-                    return
-                }
-                it.isLooping = true
-                it.start()
 
-                // display song info
-                musicInfoTextView?.text = this
-                Log.i(TAG, "Playing song $this")
-            }
+    /** Returns true iff the MusicService service is running */
+    @Suppress("DEPRECATION")
+    private fun isServiceRunning(): Boolean =
+        (getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager)
+            .getRunningServices(Int.MAX_VALUE)
+            .any { it.service.className == MusicService::class.java.canonicalName }
+
+
+    override fun onStop() {
+        Log.i(TAG, "onStop()")
+        service?.let {
+            unbindService(connection)
+            service = null
         }
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
+        super.onStop()
     }
 
-    /**
-     * Stops the music player playback
-     */
-    fun stop() {
-        player?.let {
-            if (it.isPlaying) {
-                it.stop()
-            }
-            it.reset()
-        }
 
-        // display song info
-        musicInfoTextView?.text = ""
-    }
-
-    /**
-     * Returns the list of mp3 files in the assets folder
-     *
-     * @return
-     */
-    private fun getFiles(): MutableList<String> {
-        val mp3s: MutableList<String> = ArrayList()
-        try {
-            val files = assets.list("") ?: return mp3s
-            for (fileName in files) {
-                if (fileName.toLowerCase(Locale.getDefault()).endsWith("mp3")) {
-                    mp3s.add(fileName)
-                }
-            }
-        } catch (e: IOException) {
-            Log.w(TAG, "Error while getting files.", e)
-        }
-        return mp3s
+    override fun onPause() {
+        Log.i(TAG, "onPause()")
+        super.onPause()
     }
 
     companion object {
