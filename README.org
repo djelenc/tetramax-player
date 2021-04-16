@@ -35,14 +35,15 @@ Next, we will gradually migrate all player code into the service. Initially, the
 
 - Add a constant member variable of type =MediaPlayer= to =MusicService= and immediately instantiate it: =val player = MediaPlayer()=
 - Override method =MusicService.onDestroy= and inside release the =MediaPlayer= instance.
+- Create companion object in =MusicService= with =TAG= field and change =TAG= references to point to =MusicService=
 - Move =play()= and =stop()= methods from =MainActivity= to =MusicService=:
   - Also, comment out the code that changes =TextView= objects since that code cannot be used from the service.
   - Also in =MainActivity=, comment out all calls to methods =play= and =stop=.
 - Move method =getFiles()= from =MainActivity= to =MusicService=.
 - Override =MusicService.onStartCommand= by adding the following behavior:
-  - the call to method =MusicService.play=;
+  - the call to method =play()=;
   - the return of value =START_STICKY=.
-- In =MainActivity=, remove all references to the =player= instance.
+- In =MainActivity=, remove all references to the =player= instance as well as all calls to =start()= and =stop()=.
 - In =MainActivity.onCreate()= change the behavior of =startServiceButton= so that it starts the service instead of showing the Toast message. The service is started by making the =Intent= instance and calling the =startService= method as shown below.
 #+BEGIN_SRC java
 val intent = Intent(this@MainActivity, MusicService::class.java)
@@ -68,12 +69,12 @@ internal class LocalBinder(val service: MusicService) : Binder()
 private val binder = LocalBinder(this)
 #+END_SRC
 ***** Implement =onBind= to return the service instance
-Next, we override =MusicService.onBind()= to return the binder instance whenever we bind to the service.
+Next, make =MusicService.onBind()= return the binder instance whenever we bind to the service.
 #+BEGIN_SRC java
 override fun onBind(intent: Intent?): IBinder = binder
 #+END_SRC
-***** Remove the call to =play()= from the =MusicService.onStartCommand()=
-Finally, to stop the automatic playback upon service creation remove the call to =play()= inside =MusicService.onStartCommand()=.
+***** Update the =MusicService.onStartCommand()=
+Finally, to stop the automatic playback upon service creation, remove the call to =play()= inside =MusicService.onStartCommand()=.
 *** Bind to the service in the =MainActivity=
 The =MainActivity= now has to bind to the service whenever the service is running. To know whether a binding is active and to have a reference to the service, we'll begin by defining a reference to the =MusicService= instance.
 **** Create a reference to the =MusicService= instance inside =MainActivity=
@@ -189,9 +190,9 @@ var song = ""
 #+END_SRC
 Then, change the implementations of =MusicService.play()= and =MusicService.stop()= to set the value of this member variable appropriately.
 
-Inside =MusicService.play()= simply add line =song = this= after =player.start()=.
+Inside =MusicService.play()= simply add line =song = this= after =it.start()=.
 
-At the end of =MusicService.stop()= add line =this.song = " "= after =player.reset()=.
+At the end of =MusicService.stop()= add line =this.song = " "= after =it.reset()=.
 **** Set up a =LocalBroadcastReceiver= to send a message whenever a playback starts
 Now, whenever the playback starts (or stops) we shall broadcast the name of the song with the help of a local broadcast. Let's define a helper method that sends a local broadcast message.
 #+BEGIN_SRC java
